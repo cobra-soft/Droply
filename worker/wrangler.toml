@@ -1,0 +1,53 @@
+name = "droply"
+main = "src/index.ts"
+compatibility_date = "2026-11-08"
+compatibility_flags = ["nodejs_compat"]
+
+[[durable_objects.bindings]]
+name = "SESSIONS"
+class_name = "SessionDO"
+
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiterDO"
+
+# Required whenever a Worker defines Durable Object classes.
+[[migrations]]
+tag = "v1"
+new_classes = ["SessionDO"]
+
+[[migrations]]
+tag = "v2"
+new_classes = ["RateLimiterDO"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "droply"
+database_id = "19160dd7-f168-434f-97ac-33f624438af5"
+# D1-миграции лежат в ../migrations (на уровень выше worker/).
+migrations_dir = "../migrations"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "droply-files"
+
+# Статические файлы фронтенда отдаются этим же воркером.
+# /api/* ходит в fetch() воркера, остальное — статика или SPA-фоллбэк.
+[assets]
+directory = "../frontend"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[triggers]]
+crons = ["0 * * * *"]
+
+[vars]
+# ALLOWED_ORIGINS — список разрешённых origin'ов фронтенда через запятую.
+# Same-origin запросы разрешены всегда (в т.ч. на кастомном домене), этот
+# список ограничивает только cross-origin. Добавьте сюда свой домен, если
+# фронтенд хостится отдельно.
+ALLOWED_ORIGINS = "https://droply.delasbogdan96.workers.dev,http://localhost:5173,http://127.0.0.1:5173"
+
+[observability]
+enabled = true

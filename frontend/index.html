@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b12">
+<meta name="description" content="Droply — быстрая передача файлов между устройствами через временные сессии.">
+<title>Droply</title>
+<style>
+/* ---------- Fonts (local, offline) ---------- */
+@font-face{font-family:'Balsamiq Sans';font-style:normal;font-weight:400;font-display:swap;src:url('assets/BalsamiqSans-Regular.ttf') format('truetype')}
+@font-face{font-family:'Balsamiq Sans';font-style:normal;font-weight:700;font-display:swap;src:url('assets/BalsamiqSans-Bold.ttf') format('truetype')}
+@font-face{font-family:'Balsamiq Sans';font-style:italic;font-weight:400;font-display:swap;src:url('assets/BalsamiqSans-Italic.ttf') format('truetype')}
+@font-face{font-family:'Balsamiq Sans';font-style:italic;font-weight:700;font-display:swap;src:url('assets/BalsamiqSans-BoldItalic.ttf') format('truetype')}
+
+/* ---------- Tokens ---------- */
+:root{
+  --font:'Balsamiq Sans',ui-rounded,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.2,0,0,1);
+  --ease-dec:cubic-bezier(.05,.7,.1,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --elev-1:0 1px 2px #00000022,0 1px 3px 1px #00000011;
+  --elev-2:0 2px 6px #0000001e,0 10px 26px #0000001c;
+  --elev-3:0 10px 30px #00000026,0 26px 70px #00000022;
+  --r-xl:28px;--r-lg:20px;--r-md:14px;--r-sm:10px;
+  --hue:245;
+  --bg:hsl(var(--hue) 24% 97%);--on:hsl(var(--hue) 21% 13%);
+  --surface:hsl(var(--hue) 24% 93% / .72);--surface-high:hsl(var(--hue) 20% 89% / .86);--surface-2:hsl(var(--hue) 30% 99% / .8);
+  --primary:hsl(var(--hue) 38% 34%);--on-primary:#fff;
+  --primary-container:hsl(var(--hue) 43% 84% / .85);--on-primary-container:hsl(var(--hue) 44% 18%);
+  --secondary-container:hsl(var(--hue) 22% 86% / .8);--on-secondary-container:hsl(var(--hue) 25% 22%);
+  --tertiary:hsl(305 34% 35%);--on-tertiary:#fff;
+  --tertiary-container:hsl(305 43% 87% / .85);--on-tertiary-container:hsl(305 33% 20%);
+  --error:#d93b40;--on-error:#fff;--error-container:rgba(217,59,64,.11);--on-error-container:#b52d32;
+  --outline:hsl(var(--hue) 13% 80% / .9);--outline-variant:hsl(var(--hue) 10% 70% / .5);--muted:hsl(var(--hue) 9% 38%);
+  --inverse-surface:hsl(var(--hue) 21% 15%);--inverse-on:hsl(var(--hue) 15% 93%);
+  --scrim:rgba(238,238,248,.62);
+  --glow-1:hsl(var(--hue) 70% 60% / .18);
+  --glow-2:hsl(305 70% 60% / .14);
+}
+[data-theme='dark']{
+  --bg:hsl(var(--hue) 15% 6%);--on:hsl(var(--hue) 15% 92%);
+  --surface:hsl(var(--hue) 14% 12% / .72);--surface-high:hsl(var(--hue) 13% 17% / .84);--surface-2:hsl(var(--hue) 16% 15% / .8);
+  --primary:hsl(var(--hue) 40% 78%);--on-primary:hsl(var(--hue) 44% 16%);
+  --primary-container:hsl(var(--hue) 32% 26% / .8);--on-primary-container:hsl(var(--hue) 43% 92%);
+  --secondary-container:hsl(var(--hue) 16% 24% / .8);--on-secondary-container:hsl(var(--hue) 25% 90%);
+  --tertiary:hsl(305 40% 79%);--on-tertiary:hsl(305 44% 16%);
+  --tertiary-container:hsl(305 26% 26% / .8);--on-tertiary-container:hsl(305 40% 92%);
+  --error:#ff6b6b;--on-error:#2a0607;--error-container:rgba(255,107,107,.14);--on-error-container:#ff9a9a;
+  --outline:hsl(var(--hue) 10% 28% / .9);--outline-variant:hsl(var(--hue) 10% 22% / .6);--muted:hsl(var(--hue) 9% 68%);
+  --inverse-surface:hsl(var(--hue) 15% 92%);--inverse-on:hsl(var(--hue) 21% 13%);
+  --scrim:rgba(4,6,10,.66);
+  --glow-1:hsl(var(--hue) 60% 45% / .22);
+  --glow-2:hsl(305 60% 45% / .16);
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0;font-family:var(--font);line-height:1.45;
+  background:var(--bg);color:var(--on);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .3s var(--ease),color .3s var(--ease);
+  display:flex;flex-direction:column;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 8% -8%,var(--glow-1),transparent 60%),
+    radial-gradient(55vw 55vw at 108% 8%,var(--glow-2),transparent 60%);
+}
+h1,h2,h3,p{margin:0}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;color:inherit}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.muted{color:var(--muted)}
+.spin{animation:spin 1s linear infinite;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Top controls ---------- */
+.top-controls{
+  position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;
+  padding:12px clamp(14px,4vw,26px);
+  background:var(--surface-high);border-bottom:1px solid var(--outline);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.02em;font-size:17px}
+.brand-mark{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:var(--on-primary);background:var(--primary);box-shadow:var(--elev-1)}
+.brand-mark .ic{width:17px;height:17px}
+.spacer{flex:1}
+.icon-btn{
+  width:42px;height:42px;border-radius:999px;border:1px solid var(--outline);
+  background:var(--surface);display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  transition:transform .3s var(--spring),background .25s var(--ease);
+}
+.icon-btn:hover{background:var(--secondary-container);color:var(--on-secondary-container)}
+.icon-btn:active{transform:scale(.9)}
+.lang-btn{width:auto;padding:0 13px;font-weight:700;font-size:13px}
+.lang-btn .ic{width:17px;height:17px}
+
+/* ---------- Layout ---------- */
+#app{flex:1;display:flex;flex-direction:column}
+.app{width:min(680px,100%);margin:0 auto;padding:clamp(18px,4vw,34px) clamp(14px,4vw,26px) 60px;display:flex;flex-direction:column;gap:18px;animation:view-in .45s var(--ease-dec)}
+@keyframes view-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.hero{text-align:center;padding:clamp(10px,4vw,28px) 0 8px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:var(--primary-container);color:var(--on-primary-container);font-size:12px;font-weight:700;letter-spacing:.02em}
+.hero-badge .ic{width:15px;height:15px}
+.hero-title{font-size:clamp(44px,12vw,78px);line-height:1.02;letter-spacing:-.03em;font-weight:700}
+.hero-title .dot{color:var(--primary)}
+.hero-sub{max-width:46ch;color:var(--muted);font-size:clamp(14px,3.6vw,16px)}
+
+.card{
+  background:var(--surface);border:1px solid var(--outline);border-radius:var(--r-xl);
+  padding:clamp(18px,4vw,24px);box-shadow:var(--elev-2);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;gap:16px;
+}
+.section-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.section-title .ic{width:18px;height:18px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.eyebrow .ic{width:15px;height:15px}
+
+/* ---------- Buttons ---------- */
+.btn{
+  border:0;border-radius:999px;padding:13px 20px;font-weight:700;font-size:14px;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform .28s var(--spring),box-shadow .25s var(--ease),background .25s var(--ease),opacity .2s;
+}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.55;pointer-events:none}
+.btn-primary{background:var(--primary);color:var(--on-primary);box-shadow:0 6px 18px -8px var(--primary)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--elev-2)}
+.btn-tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn-tonal:hover{background:var(--primary-container);color:var(--on-primary-container)}
+.btn-danger{background:var(--error-container);color:var(--on-error-container);border:1px solid transparent}
+.btn-danger:hover{background:rgba(217,59,64,.2)}
+.btn-lg{width:100%;height:56px;font-size:17px}
+.btn-sm{padding:10px 14px;font-size:12.5px;border-radius:999px}
+.btn-sm .ic{width:16px;height:16px}
+
+/* ---------- Inputs / chips ---------- */
+.input{
+  width:100%;height:52px;padding:0 16px;border-radius:var(--r-md);
+  background:var(--surface-2);color:var(--on);border:1px solid var(--outline);
+  font-family:var(--font);font-size:15px;font-weight:700;letter-spacing:.06em;
+  transition:border-color .2s var(--ease),background .2s var(--ease);
+}
+.input:focus{outline:none;border-color:var(--primary);background:var(--surface-high)}
+.input::placeholder{color:var(--muted);font-weight:400;letter-spacing:0}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:9px}
+.chip{
+  border:1px solid var(--outline);background:transparent;color:var(--primary);
+  border-radius:999px;padding:12px 8px;font-weight:700;font-size:13px;
+  transition:transform .25s var(--spring),background .2s var(--ease),color .2s var(--ease),border-color .2s;
+}
+.chip:hover{background:var(--secondary-container);color:var(--on-secondary-container)}
+.chip:active{transform:scale(.95)}
+.chip.active{background:var(--primary);color:var(--on-primary);border-color:transparent;box-shadow:0 6px 16px -8px var(--primary)}
+.hint{font-size:12.5px;color:var(--muted);text-align:center;margin-top:-4px}
+.divider{height:1px;background:var(--outline-variant);margin:2px 0}
+.join-row{display:flex;gap:9px}
+.join-row .input{letter-spacing:.22em;text-align:center;font-size:18px}
+.footnote{display:flex;align-items:flex-start;gap:9px;justify-content:center;text-align:center;color:var(--muted);font-size:12.5px;padding:0 8px}
+.footnote .ic{width:16px;height:16px;margin-top:1px;color:var(--primary)}
+
+/* ---------- Session ---------- */
+.session-head{flex-direction:row;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.session-id{font-size:clamp(28px,8vw,40px);font-weight:700;letter-spacing:.04em;line-height:1.05;margin-top:4px}
+.session-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.timer{font-variant-numeric:tabular-nums;font-size:clamp(24px,7vw,30px);font-weight:700;letter-spacing:.01em;color:var(--primary);line-height:1}
+.ws-status{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.ws-dot{width:9px;height:9px;border-radius:50%;background:var(--outline);flex:none}
+.ws-status.online .ws-dot{background:var(--primary);animation:live 2.2s infinite}
+.ws-status.is-off .ws-dot{background:var(--tertiary);animation:live 2.2s infinite}
+@keyframes live{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+
+.share{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.share-text{display:flex;flex-direction:column;gap:4px;min-width:0}
+.share code{font-size:14px;font-weight:700;color:var(--on);overflow-wrap:anywhere}
+
+.error,.warn{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;padding:12px 14px;border-radius:var(--r-md);animation:pop .3s var(--spring)}
+.error{color:var(--on-error-container);background:var(--error-container);border:1px solid rgba(217,59,64,.3)}
+.warn{color:var(--on-tertiary-container);background:var(--tertiary-container);border:1px solid transparent}
+.error .ic,.warn .ic{width:17px;height:17px}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+
+.dropzone{
+  border:1.5px dashed var(--outline-variant);border-radius:var(--r-lg);
+  padding:26px 18px;text-align:center;background:var(--surface-2);
+  transition:border-color .2s var(--ease),background .2s var(--ease),transform .2s var(--ease);
+}
+.dropzone:hover{border-color:var(--primary)}
+.dropzone:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.dropzone.drag{border-color:var(--primary);background:var(--primary-container)}
+.dropzone.busy{cursor:progress}
+.dz-icon{width:58px;height:58px;margin:0 auto 12px;border-radius:18px;display:grid;place-items:center;background:var(--primary-container);color:var(--on-primary-container)}
+.dz-icon .ic{width:28px;height:28px}
+.dz-title{font-weight:700;font-size:15px;margin-bottom:4px}
+.dz-sub{font-size:12.5px;color:var(--muted)}
+.dz-warn{font-size:11.5px;color:var(--on-error-container);opacity:.85;margin-top:8px}
+
+.files-head{display:flex;align-items:center;justify-content:space-between}
+.file-list{display:flex;flex-direction:column;gap:10px}
+.file-item{
+  display:flex;align-items:center;gap:14px;padding:12px 16px;
+  background:var(--surface);border:1px solid var(--outline);border-radius:var(--r-lg);
+  box-shadow:var(--elev-1);animation:rise .4s var(--ease-dec) both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.file-ic{width:46px;height:46px;border-radius:14px;flex:none;display:grid;place-items:center;background:var(--primary-container);color:var(--on-primary-container)}
+.file-ic .ic{width:22px;height:22px}
+.file-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.file-name{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-size{font-size:12px;color:var(--muted)}
+.file-actions{display:flex;gap:8px;flex:none}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 16px;color:var(--muted);font-size:14px;text-align:center}
+.empty .ic{width:40px;height:40px;opacity:.5}
+
+/* ---------- Expired ---------- */
+.expired{flex:1;align-items:center;justify-content:center}
+.expired-card{align-items:center;text-align:center;width:min(440px,100%);padding:clamp(28px,7vw,44px)}
+.expired-icon{width:84px;height:84px;border-radius:26px;display:grid;place-items:center;background:var(--error-container);color:var(--error);margin-bottom:6px}
+.expired-icon .ic{width:42px;height:42px}
+.expired-card h2{font-size:26px;letter-spacing:-.02em}
+.expired-card p{max-width:34ch}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);z-index:80;
+  background:var(--inverse-surface);color:var(--inverse-on);
+  padding:13px 20px;border-radius:var(--r-md);font-size:13.5px;font-weight:700;
+  box-shadow:var(--elev-3);max-width:min(90vw,440px);text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .25s var(--ease),transform .35s var(--spring);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Motion preference ---------- */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .btn:active,.icon-btn:active,.chip:active{transform:none}
+}
+@media(max-width:520px){
+  .session-head{flex-direction:column;align-items:flex-start}
+  .session-meta{flex-direction:row;align-items:center;justify-content:space-between;width:100%}
+  .file-actions .btn span{display:none}
+  .file-actions .btn{padding:11px}
+  .share{flex-direction:column;align-items:stretch}
+  .share .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol>
+  <symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></symbol>
+  <symbol id="i-log-in" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" x2="3" y1="12" y2="12" /></symbol>
+  <symbol id="i-folder-open" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol>
+  <symbol id="i-file-archive" viewBox="0 0 24 24"><path d="M10 12v-1" /><path d="M10 18v-2" /><path d="M10 7V6" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M15.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v16a2 2 0 0 0 .274 1.01" /><circle cx="10" cy="20" r="2" /></symbol>
+  <symbol id="i-file-code" viewBox="0 0 24 24"><path d="M10 12.5 8 15l2 2.5" /><path d="m14 12.5 2 2.5-2 2.5" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" /></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></symbol>
+  <symbol id="i-file-video" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="m10 11 5 3-5 3v-6Z" /></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></symbol>
+  <symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+  <symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></symbol>
+</svg>
+
+<header class="top-controls">
+  <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#i-zap"></use></svg></span><span>Droply</span></div>
+  <div class="spacer"></div>
+  <button id="theme-btn" class="icon-btn" data-i-aria="theme" aria-label="Theme"></button>
+  <button id="lang-btn" class="icon-btn lang-btn" data-i-aria="language" aria-label="Language">
+    <svg class="ic"><use href="#i-languages"></use></svg><span id="lang-label">EN</span>
+  </button>
+</header>
+
+<main id="app"></main>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- ---------- Home ---------- -->
+<template id="tpl-home">
+  <section class="app home">
+    <div class="hero">
+      <span class="hero-badge"><svg class="ic"><use href="#i-zap"></use></svg><span data-i="badge"></span></span>
+      <h1 class="hero-title">Droply<span class="dot">.</span></h1>
+      <p class="hero-sub" data-i="subtitle"></p>
+    </div>
+    <div class="card">
+      <div class="section-title"><svg class="ic"><use href="#i-clock"></use></svg><span data-i="sessionTtl"></span></div>
+      <div class="chips" id="ttl-chips"></div>
+      <p class="hint" data-i="ttlHint"></p>
+      <button id="create-btn" class="btn btn-primary btn-lg"><svg class="ic"><use href="#i-plus"></use></svg><span data-i="createSession"></span></button>
+      <div id="home-error" class="error" hidden></div>
+      <div class="divider"></div>
+      <div class="section-title"><svg class="ic"><use href="#i-log-in"></use></svg><span data-i="joinById"></span></div>
+      <div class="join-row">
+        <input id="join-input" class="input" inputmode="numeric" maxlength="4" autocomplete="off" data-i-ph="sessionIdPlaceholder">
+        <button id="join-btn" class="btn btn-tonal"><svg class="ic"><use href="#i-log-in"></use></svg><span data-i="join"></span></button>
+      </div>
+    </div>
+    <p class="footnote"><svg class="ic"><use href="#i-shield"></use></svg><span data-i="securityNote"></span></p>
+  </section>
+</template>
+
+<!-- ---------- Session ---------- -->
+<template id="tpl-session">
+  <section class="app session">
+    <div class="card session-head">
+      <div>
+        <span class="eyebrow"><svg class="ic"><use href="#i-folder-open"></use></svg><span data-i="roomLabel"></span></span>
+        <div class="session-id" id="session-id"></div>
+      </div>
+      <div class="session-meta">
+        <div class="timer" id="timer">--:--</div>
+        <div class="ws-status" id="ws-status"><span class="ws-dot"></span><span id="ws-text" data-i="reconnecting"></span></div>
+      </div>
+    </div>
+
+    <div class="card share">
+      <div class="share-text">
+        <span class="eyebrow" data-i="shareLink"></span>
+        <code id="share-url"></code>
+      </div>
+      <button id="copy-btn" class="btn btn-tonal btn-sm"><svg class="ic"><use href="#i-copy"></use></svg><span data-i="copy"></span></button>
+    </div>
+
+    <div id="warn" class="warn" hidden><svg class="ic"><use href="#i-circle-alert"></use></svg><span id="warn-text"></span></div>
+    <div id="error" class="error" hidden><svg class="ic"><use href="#i-circle-alert"></use></svg><span id="error-text"></span></div>
+
+    <div class="card upload-card">
+      <div class="section-title"><svg class="ic"><use href="#i-upload"></use></svg><span data-i="uploadFile"></span></div>
+      <div id="dropzone" class="dropzone" tabindex="0" role="button">
+        <input id="file-input" type="file" multiple hidden>
+        <div class="dz-icon" id="dz-icon"><svg class="ic"><use href="#i-upload"></use></svg></div>
+        <div class="dz-title" id="dz-title" data-i="dragOrSelect"></div>
+        <div class="dz-sub" data-i="maxSize"></div>
+        <div class="dz-warn" data-i="exeWarning"></div>
+      </div>
+    </div>
+
+    <div class="files-head">
+      <div class="section-title"><svg class="ic"><use href="#i-file"></use></svg><span id="files-count"></span></div>
+    </div>
+    <div id="file-list" class="file-list"></div>
+    <div id="empty" class="empty" hidden><svg class="ic"><use href="#i-folder-open"></use></svg><span data-i="noFiles"></span></div>
+  </section>
+</template>
+
+<!-- ---------- File row ---------- -->
+<template id="tpl-file">
+  <div class="file-item">
+    <div class="file-ic"></div>
+    <div class="file-info">
+      <div class="file-name"></div>
+      <div class="file-size"></div>
+    </div>
+    <div class="file-actions">
+      <button class="btn btn-tonal btn-sm dl"><svg class="ic"><use href="#i-download"></use></svg><span data-i="download"></span></button>
+      <button class="btn btn-danger btn-sm rm"><svg class="ic"><use href="#i-trash-2"></use></svg></button>
+    </div>
+  </div>
+</template>
+
+<!-- ---------- Expired ---------- -->
+<template id="tpl-expired">
+  <section class="app expired">
+    <div class="card expired-card">
+      <div class="expired-icon"><svg class="ic"><use href="#i-hourglass"></use></svg></div>
+      <h2 data-i="sessionExpired"></h2>
+      <p class="muted" data-i="sessionExpiredDesc"></p>
+      <button id="new-btn" class="btn btn-primary btn-lg"><svg class="ic"><use href="#i-plus"></use></svg><span data-i="createNew"></span></button>
+    </div>
+  </section>
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================= i18n ================= */
+  var I18N = {
+    en: {
+      appTitle: 'Droply',
+      badge: 'No sign-up · instant transfer',
+      subtitle: 'Fast file transfer between devices. Create a session, open the short link on another device — files appear instantly.',
+      sessionTtl: 'Session lifetime',
+      min: 'min',
+      ttlHint: 'From 10 minutes to 6 hours. TTL cannot be changed after creation.',
+      createSession: 'Create session',
+      creating: 'Creating…',
+      joinById: 'Join by ID',
+      sessionIdPlaceholder: '4-digit code',
+      join: 'Join',
+      files: 'Files ({count})',
+      noFiles: 'No files yet. Upload the first one.',
+      uploadFile: 'Upload file',
+      dragOrSelect: 'Drag files here or tap to select',
+      maxSize: 'Up to 50 MB · apk, exe, zip, pdf, images, video…',
+      exeWarning: 'Executable files are not scanned — download at your own risk.',
+      uploading: 'Uploading…',
+      download: 'Download',
+      delete: 'Delete',
+      online: 'Live',
+      reconnecting: 'Reconnecting…',
+      sessionExpired: 'Session ended',
+      sessionExpiredDesc: 'All files have been deleted and the link no longer works.',
+      createNew: 'Create a new session',
+      errorSessionNotFound: 'Session not found or expired',
+      errorFileTooLarge: 'File too large (max 50 MB)',
+      errorFileType: 'File type not allowed',
+      errorUpload: 'Upload failed',
+      errorDelete: 'Delete failed',
+      errorCreateSession: 'Could not create session',
+      errorJoinId: 'Enter a 4-digit session ID',
+      sessionExpiring: 'Session ends soon — download the files you need.',
+      shareLink: 'Share this link',
+      copy: 'Copy',
+      copied: 'Link copied',
+      roomLabel: 'Session',
+      securityNote: 'Files live only for the session lifetime and are deleted automatically.',
+      theme: 'Theme',
+      language: 'Language'
+    },
+    ru: {
+      appTitle: 'Droply',
+      badge: 'Без регистрации · мгновенно',
+      subtitle: 'Быстрая передача файлов между устройствами. Создайте сессию и откройте короткую ссылку на другом устройстве — файлы появятся сразу.',
+      sessionTtl: 'Время жизни сессии',
+      min: 'мин',
+      ttlHint: 'От 10 минут до 6 часов. TTL нельзя изменить после создания.',
+      createSession: 'Создать сессию',
+      creating: 'Создаём…',
+      joinById: 'Присоединиться по ID',
+      sessionIdPlaceholder: '4-значный код',
+      join: 'Войти',
+      files: 'Файлов: {count}',
+      noFiles: 'Файлов пока нет. Загрузите первый.',
+      uploadFile: 'Загрузить файл',
+      dragOrSelect: 'Перетащите файлы сюда или нажмите',
+      maxSize: 'До 50 МБ · apk, exe, zip, pdf, картинки, видео…',
+      exeWarning: 'Исполняемые файлы не проверяются — скачивайте на свой страх и риск.',
+      uploading: 'Загрузка…',
+      download: 'Скачать',
+      delete: 'Удалить',
+      online: 'Онлайн',
+      reconnecting: 'Переподключение…',
+      sessionExpired: 'Сессия завершена',
+      sessionExpiredDesc: 'Все файлы удалены, ссылка больше не работает.',
+      createNew: 'Создать новую сессию',
+      errorSessionNotFound: 'Сессия не найдена или истекла',
+      errorFileTooLarge: 'Файл слишком большой (макс. 50 МБ)',
+      errorFileType: 'Тип файла не разрешён',
+      errorUpload: 'Не удалось загрузить файл',
+      errorDelete: 'Не удалось удалить файл',
+      errorCreateSession: 'Не удалось создать сессию',
+      errorJoinId: 'Введите 4-значный ID сессии',
+      sessionExpiring: 'Сессия скоро завершится. Скачайте нужные файлы.',
+      shareLink: 'Поделиться ссылкой',
+      copy: 'Копировать',
+      copied: 'Ссылка скопирована',
+      roomLabel: 'Сессия',
+      securityNote: 'Файлы хранятся только время жизни сессии и удаляются автоматически.',
+      theme: 'Тема',
+      language: 'Язык'
+    },
+    uk: {
+      appTitle: 'Droply',
+      badge: 'Без реєстрації · миттєво',
+      subtitle: 'Швидка передача файлів між пристроями. Створіть сесію й відкрийте коротке посилання на іншому пристрої — файли з’являться одразу.',
+      sessionTtl: 'Час життя сесії',
+      min: 'хв',
+      ttlHint: 'Від 10 хвилин до 6 годин. TTL неможливо змінити після створення.',
+      createSession: 'Створити сесію',
+      creating: 'Створюємо…',
+      joinById: 'Приєднатися за ID',
+      sessionIdPlaceholder: '4-значний код',
+      join: 'Увійти',
+      files: 'Файлів: {count}',
+      noFiles: 'Файлів ще немає. Завантажте перший.',
+      uploadFile: 'Завантажити файл',
+      dragOrSelect: 'Перетягніть файли сюди або натисніть',
+      maxSize: 'До 50 МБ · apk, exe, zip, pdf, зображення, відео…',
+      exeWarning: 'Виконувані файли не перевіряються — завантажуйте на свій страх і ризик.',
+      uploading: 'Завантаження…',
+      download: 'Завантажити',
+      delete: 'Видалити',
+      online: 'Онлайн',
+      reconnecting: 'Перепідключення…',
+      sessionExpired: 'Сесію завершено',
+      sessionExpiredDesc: 'Усі файли видалені, посилання більше не працює.',
+      createNew: 'Створити нову сесію',
+      errorSessionNotFound: 'Сесію не знайдено або вона закінчилася',
+      errorFileTooLarge: 'Файл занадто великий (макс. 50 МБ)',
+      errorFileType: 'Тип файлу не дозволено',
+      errorUpload: 'Не вдалося завантажити файл',
+      errorDelete: 'Не вдалося видалити файл',
+      errorCreateSession: 'Не вдалося створити сесію',
+      errorJoinId: 'Введіть 4-значний ID сесії',
+      sessionExpiring: 'Сесія скоро закінчиться. Завантажте потрібні файли.',
+      shareLink: 'Поділитися посиланням',
+      copy: 'Копіювати',
+      copied: 'Посилання скопійовано',
+      roomLabel: 'Сесія',
+      securityNote: 'Файли зберігаються лише час життя сесії та видаляються автоматично.',
+      theme: 'Тема',
+      language: 'Мова'
+    }
+  };
+
+  var LANGS = ['en', 'ru', 'uk'];
+
+  /* ================= constants ================= */
+  var MIN_TTL = 10, MAX_TTL = 360;
+  var TTL_OPTIONS = [10, 20, 30, 60, 120, 180, 240, 360];
+  var MAX_FILE = 50 * 1024 * 1024;
+  var EXT = ['.apk','.exe','.py','.zip','.rar','.7z','.pdf','.doc','.docx','.txt','.jpg','.jpeg','.png','.gif','.webp','.mp3','.mp4','.mkv','.json','.csv','.md'];
+  var EXT_ICON = {
+    '.pdf':'file-text','.doc':'file-text','.docx':'file-text','.txt':'file-text','.md':'file-text','.csv':'file-text','.json':'file-code',
+    '.jpg':'image','.jpeg':'image','.png':'image','.gif':'image','.webp':'image',
+    '.apk':'file-code','.exe':'file-code','.py':'file-code',
+    '.zip':'file-archive','.rar':'file-archive','.7z':'file-archive',
+    '.mp3':'music','.mp4':'file-video','.mkv':'file-video'
+  };
+
+  /* ================= storage / state ================= */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var app = $('#app');
+  var toastEl = $('#toast');
+
+  function read(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
+  function write(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  function initLang() {
+    var saved = read('droply-lang', '');
+    if (LANGS.indexOf(saved) !== -1) return saved;
+    var code = (navigator.language || 'en').slice(0, 2).toLowerCase();
+    return LANGS.indexOf(code) !== -1 ? code : 'en';
+  }
+  function initTheme() {
+    var saved = read('droply-theme', '');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  var lang = initLang();
+  var theme = initTheme();
+  var selectedTtl = 30;
+  var current = { id: null, files: [], expiresAt: 0, online: false, active: false, ws: null, rt: null, tick: null, reconnect: 0 };
+
+  function t(key, vars) {
+    var s = (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+    if (vars) for (var k in vars) s = s.split('{' + k + '}').join(String(vars[k]));
+    return s;
+  }
+
+  function iconSvg(name, extra) {
+    return '<svg class="ic' + (extra ? ' ' + extra : '') + '" aria-hidden="true"><use href="#i-' + name + '"></use></svg>';
+  }
+  function tplNode(id) {
+    var tpl = document.getElementById(id);
+    return tpl.content.firstElementChild.cloneNode(true);
+  }
+
+  /* ================= theme / language ================= */
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', theme);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = theme === 'dark' ? '#0b0b12' : '#f6f5fb';
+  }
+  function updateControls() {
+    var tb = $('#theme-btn');
+    if (tb) tb.innerHTML = iconSvg(theme === 'dark' ? 'sun' : 'moon');
+    var ll = $('#lang-label');
+    if (ll) ll.textContent = lang.toUpperCase();
+  }
+  function translate() {
+    document.documentElement.lang = lang;
+    document.title = t('appTitle');
+    var nodes = document.querySelectorAll('[data-i]');
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = t(nodes[i].getAttribute('data-i'));
+    var ph = document.querySelectorAll('[data-i-ph]');
+    for (var j = 0; j < ph.length; j++) ph[j].placeholder = t(ph[j].getAttribute('data-i-ph'));
+    var aria = document.querySelectorAll('[data-i-aria]');
+    for (var k = 0; k < aria.length; k++) aria[k].setAttribute('aria-label', t(aria[k].getAttribute('data-i-aria')));
+    refreshChipLabels();
+  }
+  function refreshChipLabels() {
+    var chips = document.querySelectorAll('#ttl-chips .chip');
+    for (var i = 0; i < chips.length; i++) chips[i].textContent = chips[i].getAttribute('data-min') + ' ' + t('min');
+  }
+
+  /* ================= helpers ================= */
+  function go(path, replace) {
+    if (replace) history.replaceState({}, '', path);
+    else history.pushState({}, '', path);
+    route();
+  }
+  function toast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    toastEl.classList.remove('show');
+    void toastEl.offsetWidth;
+    toastEl.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () {
+      toastEl.classList.remove('show');
+      setTimeout(function () { toastEl.hidden = true; }, 260);
+    }, 3200);
+  }
+  function extOf(name) {
+    var i = String(name).lastIndexOf('.');
+    return i === -1 ? '' : String(name).slice(i).toLowerCase();
+  }
+  function isAllowed(name) { return EXT.indexOf(extOf(name)) !== -1; }
+  function fmtBytes(b) {
+    if (!b) return '0 B';
+    var k = 1024, u = ['B', 'KB', 'MB', 'GB'];
+    var i = Math.min(u.length - 1, Math.floor(Math.log(b) / Math.log(k)));
+    var v = b / Math.pow(k, i);
+    return (i === 0 ? v : v.toFixed(1)) + ' ' + u[i];
+  }
+  function fmtTime(ms) {
+    if (ms < 0) ms = 0;
+    var s = Math.floor(ms / 1000);
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    var p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return h > 0 ? p(h) + ':' + p(m) + ':' + p(sec) : p(m) + ':' + p(sec);
+  }
+
+  /* ================= teardown ================= */
+  function teardown() {
+    current.active = false;
+    if (current.ws) {
+      var ws = current.ws;
+      current.ws = null;
+      ws.onopen = ws.onmessage = ws.onclose = ws.onerror = null;
+      try { ws.close(); } catch (e) {}
+    }
+    if (current.rt) { clearTimeout(current.rt); current.rt = null; }
+    if (current.tick) { clearInterval(current.tick); current.tick = null; }
+  }
+
+  /* ================= HOME ================= */
+  function renderHome() {
+    current = { id: null, files: [], expiresAt: 0, online: false, active: false, ws: null, rt: null, tick: null, reconnect: 0 };
+    app.replaceChildren(tplNode('tpl-home'));
+
+    var chips = $('#ttl-chips');
+    TTL_OPTIONS.forEach(function (m) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (m === selectedTtl ? ' active' : '');
+      b.setAttribute('data-min', m);
+      b.textContent = m + ' ' + t('min');
+      b.addEventListener('click', function () {
+        selectedTtl = m;
+        var all = chips.children;
+        for (var i = 0; i < all.length; i++) all[i].classList.toggle('active', all[i] === b);
+      });
+      chips.appendChild(b);
+    });
+
+    $('#create-btn').addEventListener('click', createSession);
+    $('#join-btn').addEventListener('click', joinById);
+    $('#join-input').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    });
+    $('#join-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); joinById(); }
+    });
+
+    translate();
+  }
+
+  function homeError(msg) {
+    var el = $('#home-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = !msg;
+  }
+
+  function createSession() {
+    var btn = $('#create-btn');
+    if (!btn || btn.disabled) return;
+    var label = btn.querySelector('span');
+    homeError('');
+    btn.disabled = true;
+    var orig = label.textContent;
+    label.textContent = t('creating');
+    fetch('/api/sessions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ttl: selectedTtl })
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (!res.ok) throw new Error(data.error || t('errorCreateSession'));
+        go('/' + data.sessionId);
+      });
+    }).catch(function (err) {
+      homeError(err && err.message ? err.message : t('errorCreateSession'));
+      btn.disabled = false;
+      label.textContent = orig;
+    });
+  }
+
+  function joinById() {
+    var input = $('#join-input');
+    var v = input ? input.value.trim() : '';
+    if (!/^\d{4}$/.test(v)) { homeError(t('errorJoinId')); return; }
+    go('/' + v);
+  }
+
+  /* ================= SESSION ================= */
+  function renderSession(id) {
+    current = { id: id, files: [], expiresAt: 0, online: false, active: true, ws: null, rt: null, tick: null, reconnect: 0 };
+    app.replaceChildren(tplNode('tpl-session'));
+
+    $('#session-id').textContent = id;
+    $('#share-url').textContent = location.origin + '/' + id;
+    bindSession();
+    translate();
+
+    loadInfo().then(function (ok) {
+      if (!ok || !current.active) return;
+      renderFiles();
+      startTimer();
+      connectWS();
+    });
+  }
+
+  function bindSession() {
+    var dz = $('#dropzone');
+    var input = $('#file-input');
+
+    $('#copy-btn').addEventListener('click', copyLink);
+
+    dz.addEventListener('click', function () {
+      if (!dz.dataset.busy) input.click();
+    });
+    dz.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && !dz.dataset.busy) { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener('change', function () {
+      if (input.files && input.files.length) { uploadFiles(input.files); input.value = ''; }
+    });
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) {
+        e.preventDefault();
+        if (!dz.dataset.busy) dz.classList.add('drag');
+      });
+    });
+    ['dragleave', 'dragend'].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('drag'); });
+    });
+    dz.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dz.classList.remove('drag');
+      if (!dz.dataset.busy && e.dataTransfer && e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+    });
+  }
+
+  function setOnline(v) {
+    current.online = v;
+    var el = $('#ws-status');
+    if (!el) return;
+    el.classList.toggle('online', v);
+    el.classList.toggle('is-off', !v);
+    var txt = $('#ws-text');
+    if (txt) txt.textContent = t(v ? 'online' : 'reconnecting');
+  }
+  function showError(msg) {
+    var el = $('#error');
+    var span = $('#error-text');
+    if (!el || !span) return;
+    span.textContent = msg || '';
+    el.hidden = !msg;
+  }
+  function showWarn(msg) {
+    var el = $('#warn');
+    var span = $('#warn-text');
+    if (!el || !span) return;
+    span.textContent = msg || '';
+    el.hidden = !msg;
+  }
+
+  function loadInfo() {
+    return fetch('/api/sessions/' + current.id).then(function (res) {
+      if (res.status === 404) { go('/expired', true); return false; }
+      if (!res.ok) { showError(t('errorSessionNotFound')); return false; }
+      return res.json().then(function (data) {
+        current.expiresAt = data.expires_at || 0;
+        current.files = (data.files || []).map(normFile);
+        return true;
+      });
+    }).catch(function () { showError(t('errorSessionNotFound')); return false; });
+  }
+  function refreshFiles() {
+    return fetch('/api/sessions/' + current.id).then(function (res) {
+      if (res.status === 404) { teardown(); go('/expired', true); return; }
+      if (!res.ok) return;
+      return res.json().then(function (data) {
+        if (!current.active) return;
+        current.files = (data.files || []).map(normFile);
+        renderFiles();
+      });
+    }).catch(function () {});
+  }
+  function normFile(f) { return { id: f.id, name: f.name || f.original_name || 'file', size: f.size || 0 }; }
+
+  function startTimer() {
+    var el = $('#timer');
+    if (!el) return;
+    var tick = function () {
+      if (!current.active) return;
+      var left = current.expiresAt - Date.now();
+      el.textContent = fmtTime(left);
+      if (current.expiresAt && left <= 0) {
+        teardown();
+        go('/expired');
+      }
+    };
+    tick();
+    current.tick = setInterval(tick, 1000);
+  }
+
+  function connectWS() {
+    if (!current.active) return;
+    var proto = location.protocol === 'https:' ? 'wss' : 'ws';
+    var ws;
+    try { ws = new WebSocket(proto + '://' + location.host + '/api/sessions/' + current.id + '/ws'); }
+    catch (e) { setOnline(false); return; }
+    current.ws = ws;
+    ws.onopen = function () { current.reconnect = 0; setOnline(true); };
+    ws.onmessage = function (ev) {
+      var msg;
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      onWSMessage(msg);
+    };
+    ws.onclose = function () {
+      setOnline(false);
+      if (current.active && current.ws === ws) { current.ws = null; scheduleReconnect(); }
+    };
+    ws.onerror = function () { try { ws.close(); } catch (e) {} };
+  }
+  function scheduleReconnect() {
+    if (!current.active || current.rt) return;
+    var delay = Math.min(1000 * Math.pow(2, current.reconnect), 30000);
+    current.reconnect++;
+    current.rt = setTimeout(function () {
+      current.rt = null;
+      if (current.active) connectWS();
+    }, delay);
+  }
+  function onWSMessage(msg) {
+    if (!msg || !current.active) return;
+    if (msg.type === 'init') {
+      current.files = (msg.files || []).map(normFile);
+      renderFiles();
+    } else if (msg.type === 'file_added' && msg.file) {
+      current.files = current.files.filter(function (f) { return f.id !== msg.file.id; });
+      current.files.unshift(normFile(msg.file));
+      renderFiles();
+    } else if (msg.type === 'file_removed') {
+      current.files = current.files.filter(function (f) { return f.id !== msg.fileId; });
+      renderFiles();
+    } else if (msg.type === 'session_expiring') {
+      showWarn(t('sessionExpiring'));
+    }
+  }
+
+  function renderFiles() {
+    var list = $('#file-list');
+    var empty = $('#empty');
+    if (!list) return;
+    var count = $('#files-count');
+    if (count) count.textContent = t('files', { count: current.files.length });
+
+    list.replaceChildren();
+    if (!current.files.length) {
+      if (empty) empty.hidden = false;
+      list.hidden = true;
+      return;
+    }
+    if (empty) empty.hidden = true;
+    list.hidden = false;
+
+    current.files.forEach(function (f) {
+      var node = tplNode('tpl-file');
+      var ext = extOf(f.name);
+      node.querySelector('.file-ic').innerHTML = iconSvg(EXT_ICON[ext] || 'file');
+      var name = node.querySelector('.file-name');
+      name.textContent = f.name;
+      name.title = f.name;
+      node.querySelector('.file-size').textContent = fmtBytes(f.size);
+
+      var dl = node.querySelector('.dl');
+      dl.querySelector('span').textContent = t('download');
+      dl.title = t('download');
+      dl.setAttribute('aria-label', t('download'));
+      dl.addEventListener('click', function () { download(f.id); });
+
+      var rm = node.querySelector('.rm');
+      rm.title = t('delete');
+      rm.setAttribute('aria-label', t('delete'));
+      rm.addEventListener('click', function () { removeFile(f.id); });
+
+      list.appendChild(node);
+    });
+  }
+
+  function applySessionLanguage() {
+    if (!current.active) return;
+    var txt = $('#ws-text');
+    if (txt) txt.textContent = t(current.online ? 'online' : 'reconnecting');
+    if ($('#session-id')) renderFiles();
+  }
+
+  function setUploading(busy) {
+    var dz = $('#dropzone');
+    if (!dz) return;
+    var title = $('#dz-title');
+    var ic = $('#dz-icon');
+    if (busy) {
+      dz.dataset.busy = '1';
+      dz.classList.add('busy');
+      if (title) title.textContent = t('uploading');
+      if (ic) ic.innerHTML = iconSvg('loader', 'spin');
+    } else {
+      delete dz.dataset.busy;
+      dz.classList.remove('busy');
+      if (title) title.textContent = t('dragOrSelect');
+      if (ic) ic.innerHTML = iconSvg('upload');
+    }
+  }
+
+  function uploadFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList);
+    var valid = [];
+    files.forEach(function (f) {
+      if (f.size > MAX_FILE) { toast(f.name + ': ' + t('errorFileTooLarge')); return; }
+      if (!isAllowed(f.name)) { toast(f.name + ': ' + t('errorFileType')); return; }
+      valid.push(f);
+    });
+    if (!valid.length) return;
+
+    setUploading(true);
+    showError('');
+
+    var chain = Promise.resolve();
+    valid.forEach(function (f) {
+      chain = chain.then(function () {
+        var fd = new FormData();
+        fd.append('file', f);
+        return fetch('/api/sessions/' + current.id + '/upload', { method: 'POST', body: fd })
+          .then(function (res) {
+            if (res.ok) return;
+            return res.json().catch(function () { return {}; }).then(function (data) {
+              throw new Error(data.error || t('errorUpload'));
+            });
+          })
+          .catch(function (err) { toast(f.name + ': ' + (err && err.message ? err.message : t('errorUpload'))); });
+      });
+    });
+
+    chain.then(function () {
+      setUploading(false);
+      return refreshFiles();
+    });
+  }
+
+  function download(id) { location.href = '/api/files/' + id; }
+
+  function removeFile(id) {
+    fetch('/api/files/' + id, { method: 'DELETE' }).then(function (res) {
+      if (!res.ok) { toast(t('errorDelete')); return; }
+      current.files = current.files.filter(function (f) { return f.id !== id; });
+      renderFiles();
+    }).catch(function () { toast(t('errorDelete')); });
+  }
+
+  function copyLink() {
+    var url = location.origin + '/' + current.id;
+    var done = function () { toast(t('copied')); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(function () { legacyCopy(url, done); });
+    } else {
+      legacyCopy(url, done);
+    }
+  }
+  function legacyCopy(text, done) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      done();
+    } catch (e) { toast(t('copy')); }
+  }
+
+  /* ================= EXPIRED ================= */
+  function renderExpired() {
+    current = { id: null, files: [], expiresAt: 0, online: false, active: false, ws: null, rt: null, tick: null, reconnect: 0 };
+    app.replaceChildren(tplNode('tpl-expired'));
+    $('#new-btn').addEventListener('click', function () { go('/'); });
+    translate();
+  }
+
+  /* ================= router ================= */
+  function route() {
+    teardown();
+    var path = location.pathname.replace(/\/+$/, '');
+    if (!path) path = '/';
+    if (path === '/') { renderHome(); return; }
+    if (path === '/expired') { renderExpired(); return; }
+    var m = path.match(/^\/(?:s\/)?(\d{4})$/);
+    if (m) { renderSession(m[1]); return; }
+    history.replaceState({}, '', '/');
+    renderHome();
+  }
+
+  /* ================= boot ================= */
+  applyTheme();
+  updateControls();
+
+  $('#theme-btn').addEventListener('click', function () {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    write('droply-theme', theme);
+    applyTheme();
+    updateControls();
+  });
+  $('#lang-btn').addEventListener('click', function () {
+    lang = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
+    write('droply-lang', lang);
+    translate();
+    updateControls();
+    if (current.active) applySessionLanguage();
+  });
+
+  window.addEventListener('popstate', route);
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var onScheme = function () { if (!read('droply-theme', '')) { theme = mq.matches ? 'dark' : 'light'; applyTheme(); updateControls(); } };
+    if (mq.addEventListener) mq.addEventListener('change', onScheme);
+    else if (mq.addListener) mq.addListener(onScheme);
+  }
+
+  route();
+})();
+</script>
+</body>
+</html>

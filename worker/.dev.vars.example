@@ -1,0 +1,14 @@
+# Droply — локальные переменные для wrangler dev (только для разработки).
+# Секреты в git не коммитьте: скопируйте файл в .dev.vars (он в .gitignore).
+
+# wrangler dev отдаёт и API, и статику фронтенда на одном origin
+# (http://localhost:8787), поэтому same-origin запросы разрешены всегда.
+# Дополнительные origin'ы нужны только если фронтенд хостится отдельно.
+ALLOWED_ORIGINS = "http://localhost:8787"
+
+# Для продакшена укажите реальный домен фронтенда, если он не совпадает
+# с доменом воркера, например:
+# ALLOWED_ORIGINS = "https://droply.example.com"
+
+# Для деплоя из GitHub Actions добавьте secrets:
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
